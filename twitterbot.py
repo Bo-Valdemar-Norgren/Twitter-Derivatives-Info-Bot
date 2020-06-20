@@ -4,8 +4,6 @@ import os
 import time
 import schedule
 
-from decimal import Decimal
-
 class twitter_bot:
 	def __init__(self, tickers_lst):
 		self.dict = {ticker: get_funding(ticker) for ticker in tickers_lst}
