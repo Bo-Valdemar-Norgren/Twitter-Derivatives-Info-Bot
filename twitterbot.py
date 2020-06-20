@@ -27,6 +27,10 @@ class twitter_bot:
 
 	def run(self): # Times in CEST, needs to be updated.
 		for ticker in self.dict.keys():
+			schedule.every().day.at("06:00:30").do(self.update_funding)
+			schedule.every().day.at("14:00:30").do(self.update_funding)
+			schedule.every().day.at("22:00:30").do(self.update_funding)
+
 			schedule.every().day.at("06:01").do(self.send_tweet, ticker)
 			schedule.every().day.at("14:01").do(self.send_tweet, ticker)
 			schedule.every().day.at("22:01").do(self.send_tweet, ticker)
@@ -47,9 +51,6 @@ class twitter_bot:
 				print("Ticker '%s' is not a valid ticker." % ticker)
 		else:
 			print("Ticker: %s is already being tracked." % ticker)
-
-	def remove_ticker(self, ticker):
-		self.dict.pop(ticker, None)
 
 	def send_tweet(self, ticker):
 		last_funding = self.dict[ticker]
@@ -105,8 +106,3 @@ def calc_percentage_change(newest, oldest):
 if __name__ == "__main__":
 	bot = twitter_bot(["XBTUSD", "ETHUSD", "XRPUSD"])
 	bot.run()
-		
-
-
-
-
