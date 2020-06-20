@@ -58,12 +58,13 @@ class twitter_bot:
 		second_last_funding = get_funding(ticker, False)
 		second_funding_rate = get_funding_rate(second_last_funding)
 
+		last_funding_rate_percentage = last_funding_rate*100
 		percentage_change = round(calc_percentage_change(last_funding_rate, second_funding_rate), 2)
 
 		if percentage_change >= 0:
-		 	message = "📈 BitMEX Funding rate for $%s is now %s, an increase of %s%%" %(ticker, last_funding_rate, percentage_change)
+		 	message = "📈 BitMEX Funding rate for $%s is now %s%%, an increase of %s%%" %(ticker, last_funding_rate_percentage, percentage_change)
 		else:
-			message = "📉 BitMEX Funding rate for $%s is now %s, a decrease of %s%%" %(ticker, last_funding_rate, percentage_change)
+			message = "📉 BitMEX Funding rate for $%s is now %s%%, a decrease of %s%%" %(ticker, last_funding_rate_percentage, percentage_change)
 		
 		self.api.update_status(message)
 
