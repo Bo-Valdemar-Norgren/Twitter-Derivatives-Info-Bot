@@ -1,56 +1,63 @@
 import requests
 
-def twitter_bot():
-	XBTUSD_json = get_XBTUSD_liquidations()
-	ETHUSD_json = get_ETHUSD_liqudations()
+class twitter_bot:
+	def __init__(self, tickers_lst):
+		self.dict = {ticker: request_latest_funding(ticker) for ticker in tickers_lst}
 
-	for liquidation in XBTUSD_json:
-		orderID = get_orderID(liquidation)
-		symbol = get_symbol(liquidation)
-		side = get_side(liquidation)
-		price = get_price(liquidation)
-		quantity = get_quantity(liquidation)
+	def __repr__(self):
+		return "This bot is currently tracking: '" + "', '".join(sorted(ticker for ticker in self.dict.keys())) + "'."
 
-		print(orderID, symbol, side, price, quantity)
+	def update_funding(self):
+		for ticker in self.dict.keys():
+			self.dict[ticker] = request_latest_funding(ticker)
 
-	for liquidation in ETHUSD_json:
-		orderID = get_orderID(liquidation)
-		symbol = get_symbol(liquidation)
-		side = get_side(liquidation)
-		price = get_price(liquidation)
-		quantity = get_quantity(liquidation)
+	def add_ticker(self, ticker):
+		if ticker not in self.dict:
+			try:
+				self.dict[ticker] = request_latest_funding(ticker)
+			except:
+				print("Ticker '%s' is not a valid ticker." % ticker)
+		else:
+			print("Ticker: %s is already being tracked." % ticker)
 
-		print(orderID, symbol, side, price, quantity)
+	def remove_ticker(self, ticker):
+		self.dict.pop(ticker, None)
+
+	def send_tweet(self, ticker):
+		funding = self.dict[ticker]
+		timestamp = get_timestamp(funding)
+		symbol = get_symbol(funding)
+		funding_interval = get_funding_interval(funding)
+		funding_rate = get_funding_rate(funding)
+		funding_rate_daily = get_daily_funding_rate(funding)
+
+def request_latest_funding(ticker):
+	request = requests.get("https://www.bitmex.com/api/v1/funding?symbol=%s&count=1&reverse=true" % ticker)
+	json = request.json()
+	if request.status_code == 200 and json:
+		funding = json[0]
+		return funding
+	else:
+		e = Exception("Latest funding for the ticker %s could not be retrieved." % ticker)
+		print(e)
+		raise e
+
+def get_timestamp(funding):
+	return funding["timestamp"]
+
+def get_symbol(funding):
+	return funding["symbol"]
+
+def get_funding_interval(funding):
+	return funding["fundingInterval"]
+
+def get_funding_rate(funding):
+	return funding["fundingRate"]
+
+def get_daily_funding_rate(funding):
+	return funding["fundingRateDaily"]
 
 
-
-
-def get_XBTUSD_liquidations():
-	request = requests.get('https://www.bitmex.com/api/v1/liquidation?symbol=XBTUSD&count=50&reverse=true')
-	print("BTC status", request.status_code)
-	return request.json()
-
-def get_ETHUSD_liqudations():
-	request = requests.get('https://www.bitmex.com/api/v1/liquidation?symbol=ETHUSD&count=50&reverse=true')
-	print("ETH status", request.status_code)
-	return request.json()
-
-def get_orderID(liquidation):
-	return liquidation["orderID"]
-
-def get_symbol(liquidation):
-	return liquidation["symbol"]
-
-def get_side(liquidation):
-	return liquidation["side"]
-
-def get_price(liquidation):
-	return liquidation["price"]
-
-def get_quantity(liquidation):
-	return liquidation["leavesQty"]
-
-twitter_bot()
-
-
-
+if __name__ == "__main__":
+	bot = twitter_bot(["XBTUSD", "ETHUSD", "XRPUSD"])
+	bot.add_ticker("XYZUSD")
