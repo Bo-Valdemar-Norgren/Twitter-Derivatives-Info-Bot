@@ -1,6 +1,10 @@
 import requests
 import tweepy
 import os
+import time
+import schedule
+
+from decimal import Decimal
 
 class twitter_bot:
 	def __init__(self, tickers_lst):
@@ -11,7 +15,7 @@ class twitter_bot:
 		return "This bot is currently tracking: '" + "', '".join(sorted(ticker for ticker in self.dict.keys())) + "'."
 
 	def login(self):
-		access_token = os.environ['TWITTER_ACC_TOKEN']
+		access_token = os.environ['TWITTER_ACC_TOKEN'] 
 		access_token_secret = os.environ['TWITTER_ACC_TOKEN_SECRET']
 		api_key = os.environ['TWITTER_API_KEY']
 		api_key_secret = os.environ['TWITTER_API_KEY_SECRET']
@@ -21,11 +25,21 @@ class twitter_bot:
 
 		return tweepy.API(auth)
 
+	def run(self): # Times in CEST, needs to be updated.
+		for ticker in self.dict.keys():
+			schedule.every().day.at("06:01").do(self.send_tweet, ticker)
+			schedule.every().day.at("14:01").do(self.send_tweet, ticker)
+			schedule.every().day.at("22:01").do(self.send_tweet, ticker)
+
+		while True:
+			schedule.run_pending()
+			time.sleep(60) # wait one minute
+
 	def update_funding(self):
 		for ticker in self.dict.keys():
 			self.dict[ticker] = get_funding(ticker)
 
-	def add_ticker(self, ticker):
+	def add_ticker(self, ticker): # TODO: Probably need to add threading to run method for this to work.
 		if ticker not in self.dict:
 			try:
 				self.dict[ticker] = get_funding(ticker)
@@ -44,14 +58,14 @@ class twitter_bot:
 		second_last_funding = get_funding(ticker, False)
 		second_funding_rate = get_funding_rate(second_last_funding)
 
-		percentage_change = calc_percentage_change(second_funding_rate, last_funding_rate)
+		percentage_change = round(calc_percentage_change(last_funding_rate, second_funding_rate), 2)
 
-		# if percentage_change >= 0:
-		# 	message = "BitMEX Funding rate for %s is now %s, an increase of %s%" (ticker, last_funding_rate, percentage_change)
-		# else:
-		# 	message = "BitMEX Funding rate for %s is now %s, a decrease of %s%" (ticker, last_funding_rate, percentage_change)
+		if percentage_change >= 0:
+		 	message = "📈 BitMEX Funding rate for $%s is now %s, an increase of %s%%" %(ticker, last_funding_rate, percentage_change)
+		else:
+			message = "📉 BitMEX Funding rate for $%s is now %s, a decrease of %s%%" %(ticker, last_funding_rate, percentage_change)
 		
-		#self.api.update_status("Testing")
+		self.api.update_status(message)
 
 
 def get_funding(ticker, latest=True):
@@ -84,11 +98,14 @@ def get_funding_rate(funding):
 def get_daily_funding_rate(funding):
 	return funding["fundingRateDaily"]
 
-def calc_percentage_change(first_num, second_num):
-	return ((first_num - second_num)/abs(second_num))*100
-
-
+def calc_percentage_change(newest, oldest):
+	return ((newest - oldest)/abs(oldest))*100
 
 if __name__ == "__main__":
 	bot = twitter_bot(["XBTUSD", "ETHUSD", "XRPUSD"])
-	bot.send_tweet("XBTUSD")
+	bot.run()
+		
+
+
+
+
