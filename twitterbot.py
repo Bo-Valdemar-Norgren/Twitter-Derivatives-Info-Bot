@@ -4,7 +4,7 @@ import os
 import time
 import schedule
 
-class twitter_bot:
+class FundingBot:
 	def __init__(self, tickers_lst):
 		self.dict = {ticker: get_funding(ticker) for ticker in tickers_lst}
 		self.api = self.login()
@@ -102,5 +102,5 @@ def calc_percentage_change(newest, oldest):
 	return ((newest - oldest)/abs(oldest))*100
 
 if __name__ == "__main__":
-	bot = twitter_bot(["XBTUSD", "ETHUSD", "XRPUSD"])
+	bot = FundingBot(["XBTUSD", "ETHUSD", "XRPUSD"])
 	bot.run()
