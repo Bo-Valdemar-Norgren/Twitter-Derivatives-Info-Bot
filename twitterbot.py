@@ -57,6 +57,9 @@ class FundingBot:
 		else:
 			print("Ticker: %s is already being tracked." % ticker)
 
+	def remove_ticker(self, ticker):
+		self.dict.pop(ticker, None)
+
 	def send_tweet(self, ticker): # TODOO: Add timestamp for tweets not to be duplicates
 		last_funding = self.dict[ticker]
 		last_funding_rate = get_funding_rate(last_funding)
