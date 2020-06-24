@@ -48,10 +48,10 @@ class FundingBot:
 
 	def schedule_funding_updates(self):
 		"""
-		Schedules the bot to retreive updated fundings at certain times.
+		Schedules the bot to retrieve updated fundings at certain times.
 
 		Bitmex updates funding for contracts at 04:00, 12:00, 20:00 UTC. 
-		Funding is retreived a minute after the update to ensure up to date fundings.
+		Funding is retrieved a minute after the update to ensure up to date fundings.
 		"""
 		first_funding_update = military_utc_to_local(4, 1)
 		second_funding_update = military_utc_to_local(12, 1)
