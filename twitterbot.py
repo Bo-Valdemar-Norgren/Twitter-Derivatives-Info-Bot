@@ -13,7 +13,7 @@ class FundingBot:
 		self.api = self.login()
 
 	def __repr__(self):
-		return "This bot is currently tracking: '" + "', '".join(sorted(ticker for ticker in self.dict.keys())) + "'."
+		return "This bot is currently tracking: '" + "', '".join(sorted(ticker for ticker in self.current_funding_dict.keys())) + "'."
 
 	def login(self):
 		"""
@@ -84,7 +84,7 @@ class FundingBot:
 		"""
 		if ticker not in self.current_funding_dict:
 			try:
-				self.dict[ticker] = get_funding(ticker, latest=True)
+				self.current_funding_dict[ticker] = get_funding(ticker, latest=True)
 			except:
 				print("Ticker '%s' is not a valid ticker." % ticker)
 		else:
