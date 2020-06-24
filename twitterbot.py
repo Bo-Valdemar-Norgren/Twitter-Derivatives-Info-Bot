@@ -186,5 +186,4 @@ def military_utc_to_local(hour, minute):
 
 if __name__ == "__main__":
 	bot = FundingBot(["ETHUSD", "XBTUSD", "XRPUSD"])
-	bot.send_tweet("XBTUSD")
 	bot.run()
