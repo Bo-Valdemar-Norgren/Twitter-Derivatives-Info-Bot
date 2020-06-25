@@ -104,7 +104,8 @@ class FundingBot:
 		last_funding_rate = get_funding_rate(last_funding)
 		last_funding_timestamp = get_timestamp(last_funding)
 
-		parsed_timestamp = parse(last_funding_timestamp).strftime("%b %d %Y %H:%M")
+		parsed_timestamp = parse(last_funding_timestamp).strftime("%b %d %Y %H:%M") + " UTC"
+		print(parsed_timestamp)
 
 		penultimate_funding = get_funding(ticker, latest=False)
 		penultimate_funding_rate = get_funding_rate(penultimate_funding)
