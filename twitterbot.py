@@ -73,7 +73,7 @@ class FundingBot:
 		second_funding_update = military_utc_to_local(12, 2)
 		third_funding_update = military_utc_to_local(20, 2)
 
-		print("Scheduling tweets for: " + self.current_funding_dict.keys())
+		print("Scheduling tweets for: ", self.current_funding_dict.keys())
 
 		for ticker in self.current_funding_dict.keys():
 			schedule.every().day.at(first_funding_update).do(self.send_tweet, ticker)
