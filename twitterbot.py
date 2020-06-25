@@ -188,5 +188,5 @@ def military_utc_to_local(hour, minute):
 	return utc.to('local').format('HH:mm')
 
 if __name__ == "__main__":
-	bot = FundingBot(["ETHUSD", "XBTUSD", "XRPUSD"])
+	bot = FundingBot(["BCHUSD", "ETHUSD", "XBTUSD", "XRPUSD"])
 	bot.run()
