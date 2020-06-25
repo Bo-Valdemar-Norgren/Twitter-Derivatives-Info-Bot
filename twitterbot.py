@@ -73,6 +73,8 @@ class FundingBot:
 		second_funding_update = military_utc_to_local(12, 2)
 		third_funding_update = military_utc_to_local(20, 2)
 
+		print("Scheduling tweets for: " + self.current_funding_dict.keys())
+
 		for ticker in self.current_funding_dict.keys():
 			schedule.every().day.at(first_funding_update).do(self.send_tweet, ticker)
 			schedule.every().day.at(second_funding_update).do(self.send_tweet, ticker)
@@ -105,7 +107,6 @@ class FundingBot:
 		last_funding_timestamp = get_timestamp(last_funding)
 
 		parsed_timestamp = parse(last_funding_timestamp).strftime("%b %d %Y %H:%M") + " UTC"
-		print(parsed_timestamp)
 
 		penultimate_funding = get_funding(ticker, latest=False)
 		penultimate_funding_rate = get_funding_rate(penultimate_funding)
@@ -115,14 +116,15 @@ class FundingBot:
 
 		if percentage_change >= 0:
 		 	message = """
-		 	%s
+		 	 %s
 		 	📈 BitMEX Funding rate for $%s is now %s%%, an increase of %s%%""" %(parsed_timestamp, ticker, last_funding_rate_percentage, percentage_change)
 		else:
 			message = """
-			%s
+			 %s
 			📉 BitMEX Funding rate for $%s is now %s%%, a decrease of %s%%""" %(parsed_timestamp, ticker, last_funding_rate_percentage, percentage_change)
 		
 		self.api.update_status(message)
+		print("Tweet sent.")
 
 def get_funding(ticker, latest):
 	"""
