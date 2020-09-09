@@ -111,7 +111,7 @@ class FundingBot:
 		penultimate_funding = get_funding(ticker, latest=False)
 		penultimate_funding_rate = get_funding_rate(penultimate_funding)
 
-		last_funding_rate_percentage = last_funding_rate*100
+		last_funding_rate_percentage = round(last_funding_rate*100, 4)
 		percentage_change = round(calc_percentage_change(last_funding_rate, penultimate_funding_rate), 2)
 
 		if percentage_change >= 0:
@@ -190,3 +190,4 @@ def military_utc_to_local(hour, minute):
 if __name__ == "__main__":
 	bot = FundingBot(["BCHUSD", "ETHUSD", "XBTUSD", "XRPUSD"])
 	bot.run()
+
